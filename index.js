@@ -48,9 +48,6 @@ let topMovies = [
 },
   ];
 
-const http = require('http');
-
-
 app.get('/movies', (req, res) => {
     res.json(topMovies);
   });
