@@ -1,9 +1,26 @@
 const express = require('express');
-const morgan = require('morgan');
+const morgan = require('morgan'),
+bodyParser = require('body-parser'),
+uuid = require('uuid');
+
 const app = express();
 
 app.use(express.static('public'));
 app.use(morgan('common'));
+app.use(bodyParser.json());
+
+let users = [
+    {
+        id: 1,
+        name: "John",
+        favoriteMovies: []
+    },
+    {
+        id: 2,
+        name: "Jane",
+        favoriteMovies: ["The Lord of the Rings: The Return of the King"]
+    }
+    ];
 
 let topMovies = [
    {
@@ -49,7 +66,7 @@ let topMovies = [
   ];
 
 app.get('/movies', (req, res) => {
-    res.json(topMovies);
+    res.status(200).json(topMovies);
   });
 
 

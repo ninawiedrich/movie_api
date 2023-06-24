@@ -1,0 +1,15 @@
+.styled-table {
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.styled-table th, .styled-table td {
+    padding: 15px;
+    border: 2px solid black;
+}
+
+.styled-table thead {
+    background-color: black;
+    color: white;
+}
