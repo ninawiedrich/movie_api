@@ -81,20 +81,52 @@
               <td>A JSON object of a specific director</td>
           </tr>
           <tr>
+            <td>Returns the name of the director in a certain movie.</td>
+            <td>/movies/director/:Title</td>
+            <td>GET</td>
+            <td>:Title</td>
+            <td>None</td>
+            <td>A string with the name of a director in specific movie</td>
+        </tr>
+        <tr>
+          <td>Returns the genre of specific movie.</td>
+          <td>/movies/genre/:Title</td>
+          <td>GET</td>
+          <td>:Title</td>
+          <td>None</td>
+          <td>A string with data of genre in specific movie</td>
+        </tr>
+        <tr>
+          <td>Returns the description of specific movie.</td>
+          <td>/movies/description/:Title</td>
+          <td>GET</td>
+          <td>:Title</td>
+          <td>None</td>
+          <td>A string with description of specific movie</td>
+        </tr>
+        <tr>
+          <td>Returns a image URL for the specific movie.</td>
+          <td>/movies/image/:Title</td>
+          <td>GET</td>
+          <td>:Title</td>
+          <td>None</td>
+          <td>A URL of the image of specific movie</td>
+        </tr>
+          <tr>
             <td>Allows new users to register</td>
             <td>/users</td>
             <td>POST</td>
             <td>None</td>
-            <td>A JSON object of the new user, structured like: {"Username": "", "Password": "", "Email": "", "Birthday": "0000-00-00"}</td>
-            <td>A JSON object of the new user, structured like: {"Username": "", "Password": "", "Email": "", "Birthday": "0000-00-00"}</td>
-        </tr>
+            <td>A JSON object of the new user, structured like: {"Username": "", favoritMovies:[]}</td>
+            <td>A JSON object of the new user, structured like: {"Username": "", favoritMovies:[]}</td>
+          </tr>
           <tr>
               <td>Allows users to update user info</td>
               <td>/users/:id</td>
               <td>PUT</td>
               <td>:id</td>
-              <td>A JSON object of the new user, structured like: {"Username": "", "Password": "", "Email": "", "Birthday": "0000-00-00"}</td>
-              <td>A JSON object of the new user, structured like: {"Username": "", "Password": "", "Email": "", "Birthday": "0000-00-00"}</td>
+              <td>A JSON object of the new user, structured like: {"Username": "", favoritMovies:[]}</td>
+              <td>A JSON object of the new user, structured like: {"Username": "", favoritMovies:[]}</td>
           </tr>
           <tr>
               <td>Allows users to add a movie to their favorites</td>

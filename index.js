@@ -125,7 +125,7 @@ let users = [
            "name": "Crime",
            "description": "Crime movies revolve around criminal activities, heists, investigations, and the cat-and-mouse games between law enforcement and criminals. They often explore themes of morality, justice, and the human psyche."
          },
-         "imageUrl": "https://example.com/joker.jpg",
+         "imageUrl": "https://th.bing.com/th/id/OIP.fL19ecp28oQxx097fTpUPQHaEK?pid=ImgDet&rs=1",
          "featured": true
      },
      {
@@ -192,6 +192,43 @@ app.get('/movies', (req, res) => {
     if (movie) {res.status(200).json(movie);
     } else {
         res.status(404).send('Movie not found.');
+    }
+  });
+
+
+  app.get('/movies/director/:Title', (req, res) => {
+    const director = topMovies.find((movie) => movie.title === req.params.Title).director.name;
+    
+    if (director) {res.status(200).json(director);
+    } else {
+        res.status(404).send('Director not found.');
+    }
+  });
+
+  app.get('/movies/genre/:Title', (req, res) => {
+    const genre = topMovies.find((movie) => movie.title === req.params.Title).genre.name;
+    
+    if (genre) {res.status(200).json(genre);
+    } else {
+        res.status(404).send('Genre not found.');
+    }
+  });
+
+  app.get('/movies/description/:Title', (req, res) => {
+    const description = topMovies.find((movie) => movie.title === req.params.Title).description;
+    
+    if (description) {res.status(200).json(description);
+    } else {
+        res.status(404).send('Description not found.');
+    }
+  });
+
+  app.get('/movies/image/:Title', (req, res) => {
+    const image = topMovies.find((movie) => movie.title === req.params.Title).imageUrl;
+    
+    if (image) {res.status(200).json(image);
+    } else {
+        res.status(404).send('Image not found.');
     }
   });
 
