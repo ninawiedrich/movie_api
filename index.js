@@ -3,11 +3,20 @@ const morgan = require('morgan'),
 bodyParser = require('body-parser'),
 uuid = require('uuid');
 
+const mongoose = require('mongoose');
+const Models = require('./models.js');
+
+const Movies = Models.Movie;
+const Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/MovieMaven', { useNewUrlParser: true, useUnifiedTopology: true });
+
 const app = express();
 
 app.use(express.static('public'));
 app.use(morgan('common'));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
 
 let users = [
     {
@@ -39,20 +48,20 @@ let users = [
          "featured": true
      },
      {
-         "title": "No Country for Old Men",
-         "director": {
-           "name": "Joel Coen, Ethan Coen",
-           "bio": "Joel Coen and Ethan Coen, commonly known as the Coen brothers, are American filmmakers. They have collaborated on numerous critically acclaimed movies, known for their distinctive style and dark humor.",
-           "birth": "November 29, 1954 (Joel Coen), September 21, 1957 (Ethan Coen)"
-         },
-         "description": "No Country for Old Men is a gripping crime thriller directed by Joel Coen and Ethan Coen. It tells the story of a hunter who stumbles upon a drug deal gone wrong and finds a suitcase full of money, setting off a chain of violent events.",
-         "genre": {
-           "name": "Crime",
-           "description": "Crime movies revolve around criminal activities, heists, investigations, and the cat-and-mouse games between law enforcement and criminals. They often explore themes of morality, justice, and the human psyche."
-         },
-         "imageUrl": "https://example.com/no_country_for_old_men.jpg",
-         "featured": false
-     },
+        "title": "The Hobbit: An Unexpected Journey",
+        "director": {
+          "name": "Peter Jackson",
+          "bio": "Peter Jackson is a renowned New Zealand filmmaker. He is best known for his work in directing and producing The Lord of the Rings trilogy, which garnered critical acclaim and commercial success.",
+          "birth": "October 31, 1961"
+        },
+        "description": "The Hobbit: An Unexpected Journey is the first film in the three-part series directed by Peter Jackson. The movie follows Bilbo Baggins, who is thrust into an epic quest to reclaim the lost Dwarf Kingdom of Erebor from the fearsome dragon Smaug, along with the wizard Gandalf and thirteen dwarves.",
+        "genre": {
+          "name": "Fantasy",
+          "description": "Fantasy movies involve imaginative and often magical elements, taking viewers into fictional worlds filled with mythical creatures, supernatural powers, and epic quests."
+        },
+        "imageUrl": "https://example.com/the_hobbit_an_unexpected_journey.jpg",
+        "featured": true
+      },
      {
          "title": "The Social Network",
          "director": {
@@ -174,11 +183,37 @@ let users = [
          "featured": false
      }
      ];
+
+  
      
 //READ DATA
 app.get('/', (req, res) => {
     res.send('The whole of life is just like watching a film. Only it is as though you always get in ten minutes after the big picture has started, and no-one will tell you the plot, so you have to work it out all yourself from the clues. - Terry Pratchett');
   });
+
+  // Get all users -> add in documentation!
+app.get('/users', (req, res) => {
+  Users.find()
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// Get a user by username -> add in documentation!
+app.get('/users/:Username', (req, res) => {
+  Users.findOne({ Username: req.params.Username })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
 
 app.get('/movies', (req, res) => {
     res.status(200).json(topMovies);
@@ -248,42 +283,112 @@ app.get('/movies/directors/:DirectorName', (req, res) => {
     }  
 });
 
-//ADD NEW USER
+//Add a user
+/* We’ll expect JSON in this format
+{
+  ID: Integer,
+  Username: String,
+  Password: String,
+  Email: String,
+  Birthday: Date
+}*/
 app.post('/users', (req, res) => {
-    const newUser = req.body;
-    if (newUser.name) {
-        newUser.id = uuid.v4();
-        users.push(newUser);
-        res.status(201).json(newUser);
-    } else {
-        res.status(400).send('Missing name in request body');
-    }
+  Users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        Users
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          .then((user) =>{res.status(201).json(user) })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
 
-//UPDATE USER INFO
-app.put('/users/:id', (req, res) => {
-    const user = users.find((user) => user.id == req.params.id)
+// //UPDATE USER INFO
+// app.put('/users/:id', (req, res) => {
+//     const user = users.find((user) => user.id == req.params.id)
 
-    if(user) {
-    user.name = req.body.name;
-        res.status(200).json(user);
-    } else {
-        res.status(404).send('User not found.');
+//     if(user) {
+//     user.name = req.body.name;
+//         res.status(200).json(user);
+//     } else {
+//         res.status(404).send('User not found.');
+//     }
+
+// });
+
+// Update a user's info, by username
+/* We’ll expect JSON in this format
+{
+  Username: String,
+  (required)
+  Password: String,
+  (required)
+  Email: String,
+  (required)
+  Birthday: Date
+}*/
+app.put('/users/:Username', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+    {
+      Username: req.body.Username,
+      Password: req.body.Password,
+      Email: req.body.Email,
+      Birthday: req.body.Birthday
     }
-
+  },
+  { new: true }, // This line makes sure that the updated document is returned
+  (err, updatedUser) => {
+    if(err) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    } else {
+      res.json(updatedUser);
+    }
+  });
 });
 
-//ADD MOVIE TO FAVORITES
-app.post('/users/:id/:MovieTitle', (req, res) => {
-    const user = users.find((user) => user.id == req.params.id)
-
-    if(user) {
-    user.favoriteMovies.push(req.params.MovieTitle);
-        res.status(200).send(`Movie ${req.params.MovieTitle} has been added to user ${req.params.id}'s array.`);
+// Add a movie to a user's list of favorites
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, {
+     $push: { FavoriteMovies: req.params.MovieID }
+   },
+   { new: true }, // This line makes sure that the updated document is returned
+  (err, updatedUser) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
     } else {
-        res.status(404).send('User not found.');
+      res.json(updatedUser);
     }
+  });
 });
+
+// //ADD MOVIE TO FAVORITES
+// app.post('/users/:id/:MovieTitle', (req, res) => {
+//     const user = users.find((user) => user.id == req.params.id)
+
+//     if(user) {
+//     user.favoriteMovies.push(req.params.MovieTitle);
+//         res.status(200).send(`Movie ${req.params.MovieTitle} has been added to user ${req.params.id}'s array.`);
+//     } else {
+//         res.status(404).send('User not found.');
+//     }
+// });
 
 //DELETE MOVIE FROM FAVORITES
 app.delete('/users/:id/:MovieTitle', (req, res) => {
@@ -297,16 +402,32 @@ app.delete('/users/:id/:MovieTitle', (req, res) => {
         }
 })
 
-//DELETE USER
-app.delete('/users/:id', (req, res) => {
-    const user = users.find((user) => user.id == req.params.id)
+// //DELETE USER
+// app.delete('/users/:id', (req, res) => {
+//     const user = users.find((user) => user.id == req.params.id)
     
-        if(user) {
-        users = users.filter((user) => user.id !== req.params.id);
-            res.status(200).send(`User ${req.params.id} has been deleted.`);
-        } else {
-            res.status(404).send('User not found.');
-        }
+//         if(user) {
+//         users = users.filter((user) => user.id !== req.params.id);
+//             res.status(200).send(`User ${req.params.id} has been deleted.`);
+//         } else {
+//             res.status(404).send('User not found.');
+//         }
+// });
+
+// Delete a user by username
+app.delete('/users/:Username', (req, res) => {
+  Users.findOneAndRemove({ Username: req.params.Username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + ' was not found');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 
