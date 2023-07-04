@@ -117,38 +117,58 @@
             <td>/users</td>
             <td>POST</td>
             <td>None</td>
-            <td>A JSON object of the new user, structured like: {"Username": "", favoritMovies:[]}</td>
-            <td>A JSON object of the new user, structured like: {"Username": "", favoritMovies:[]}</td>
+            <td>A JSON object of the new user, structured like: {username: {type: String, required: true},
+              password: {type: String, required: true},
+              email: {type: String, required: true},
+              birthday: Date,
+              favoriteMovies: [ ObjectId ]
+          }</td>
+            <td>A JSON object of the new user, structured like: {username: {type: String, required: true},
+              password: {type: String, required: true},
+              email: {type: String, required: true},
+              birthday: Date,
+              favoriteMovies: [ ObjectId ]
+          }</td>
           </tr>
           <tr>
               <td>Allows users to update user info</td>
               <td>/users/:id</td>
               <td>PUT</td>
               <td>:id</td>
-              <td>A JSON object of the new user, structured like: {"Username": "", favoritMovies:[]}</td>
-              <td>A JSON object of the new user, structured like: {"Username": "", favoritMovies:[]}</td>
+              <td>A JSON object of the new user, structured like: {username: {type: String, required: true},
+                password: {type: String, required: true},
+                email: {type: String, required: true},
+                birthday: Date,
+                favoriteMovies: [ ObjectId ]
+            }</td>
+              <td>A JSON object of the new user, structured like: {username: {type: String, required: true},
+                password: {type: String, required: true},
+                email: {type: String, required: true},
+                birthday: Date,
+                favoriteMovies: [ ObjectId ]
+            }</td>
           </tr>
           <tr>
               <td>Allows users to add a movie to their favorites</td>
-              <td>/users/:id/:MovieTitle</td>
+              <td>/users/:username/movies/:objectId</td>
               <td>POST</td>
-              <td>:Username, :MovieID</td>
+              <td>:username, :objectID</td>
               <td>None</td>
               <td>A JSON of the user</td>
           </tr>
           <tr>
               <td>Allows users to remove a movie from their favorites</td>
-              <td>/users/:id/:MovieTitle</td>
+              <td>/users/:username/movies/:objectId</td>
               <td>DELETE</td>
-              <td>:Username, :MovieID</td>
+              <td>:username, :objectID</td>
               <td>None</td>
               <td>Text confirming the movie has been removed from the user's list</td>
           </tr>
           <tr>
               <td>Allows a user to deregister</td>
-              <td>/users/:id</td>
+              <td>/users/:username</td>
               <td>DELETE</td>
-              <td>:Username</td>
+              <td>:username</td>
               <td>None</td>
               <td>Text confirming the user has been deleted</td>
           </tr>
