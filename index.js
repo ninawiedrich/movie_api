@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 
 //import auth.js file
-let auth = require('./auth')(app);
+let auth = require('./auth')(app)
 
 //import passport.js file
 const passport = require('passport');
