@@ -18,6 +18,13 @@ app.use(morgan('common'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 
+//import auth.js file
+let auth = require('./auth')(app);
+
+//import passport.js file
+const passport = require('passport');
+require('./passport');
+
 
 //READ DATA
 app.get('/', (req, res) => {
@@ -49,7 +56,7 @@ app.get('/users/:username', (req, res) => {
 });
 
 // Get all movies
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.find()
   .then((movies) => {
   res.status(200).json(movies);
