@@ -10,7 +10,9 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
-mongoose.connect('mongodb://localhost:27017/MovieMaven', { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect('mongodb://localhost:27017/MovieMaven', { useNewUrlParser: true, useUnifiedTopology: true });
+
+mongoose.connect(process.env.moviemaven, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const app = express();
 
