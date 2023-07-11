@@ -119,10 +119,8 @@ app.get('/movies/director/:Title', (req, res) => {
 
  // Get the genre of a movie
 app.get('/movies/genre/:Title', (req, res) => {
-  console.log(req.params.Title)
   Movies.findOne({ title: req.params.Title })
   .then((movie) => {
-    console.log("movie", movie.genre)
   res.status(200).json(movie.genre);
   })
   .catch((err) => {
