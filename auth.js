@@ -17,25 +17,21 @@ let generateJWTToken = (user) => {
 /* POST login. */
 module.exports = (router) => {
   router.post('/login', (req, res) => {
-    console.log('Login attempt');
-    passport.authenticate('local', {session: false}, (error, user, info) => {
-      console.log('Inside passport authenticate');
+    passport.authenticate('local', { session: false }, (error, user, info) => {
       if (error || !user) {
-        console.log('Authentication error or no user: ', error);
-        res.status(400).json({message: 'Something is not right', user: user});
-      } else {
-        req.login(user, {session: false}, (error) => {
-          console.log('Inside req.login');
-          if (error) {
-            console.log('Error in req.login: ', error);
-            res.send(error);
-          } else {
-            const token = jwt.sign({id: user.id}, jwtSecret, {expiresIn: '2m'});
-            console.log('Token generated: ', token);
-            res.json({user, token});
-          }
+        console.log(error);
+        return res.status(400).json({
+          message: 'Something is not right',
+          user: user
         });
       }
+      req.login(user, { session: false }, (error) => {
+        if (error) {
+          res.send(error);
+        }
+        let token = generateJWTToken(user.toJSON());
+        return res.json({ user, token });
+      });
     })(req, res);
   });
 }
