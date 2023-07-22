@@ -79,7 +79,7 @@ app.get('/users/:username', (req, res) => {
 });
 
 // Get all movies
-app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
+app.get('/movies', (req, res) => {
   Movies.find()
   .then((movies) => {
   res.status(200).json(movies);
@@ -313,7 +313,7 @@ app.delete('/users/:username/movies/:objectId',  passport.authenticate('jwt', {s
   res.status(500).send('Error: ' + err);
   });
   });
-
+    
 // Delete a user by username
 app.delete('/users/:username', passport.authenticate('jwt', {session: false}), (req, res) => {
   Users.findOneAndRemove({ username: req.params.username })
