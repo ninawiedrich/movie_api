@@ -24,7 +24,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 const cors = require('cors');
 app.use(cors());
 
-
 //To allow acces just from specific origins, use the following code (instead of app.use(cors())):
 // CORS middleware
 
@@ -40,14 +39,12 @@ app.use(cors());
 //   }
 // }));
 
-
 //import auth.js file
 let auth = require('./auth')(app)
 
 //import passport.js file
 const passport = require('passport');
 require('./passport');
-
 
 //READ DATA
 app.get('/', (req, res) => {
@@ -101,7 +98,6 @@ app.get('/movies/:Title',  passport.authenticate('jwt', {session: false}), (req,
   res.status(500).send('Error: ' + err);
   });
   });
-
 
 // Get the director of a movie
 app.get('/movies/director/:Title',  passport.authenticate('jwt', {session: false}), (req, res) => {
@@ -241,10 +237,11 @@ app.post('/users',
   (required)
   birthday: Date
 }*/
-
 app.put('/users/:username', passport.authenticate('jwt', {session: false}),
 [
-  check('password', 'Min 6 characters are required').isLength({min: 6}),
+  check('username', 'Username is required').isLength({min: 5}),
+  check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('password', 'Password is required').not().isEmpty(),
   check('email', 'Email does not appear to be valid').isEmail()
 ], 
 (req, res) => {
@@ -255,12 +252,12 @@ app.put('/users/:username', passport.authenticate('jwt', {session: false}),
     return res.status(422).json({ errors: errors.array() });
   }
 
-  let hashedPassword = Users.hashPassword(req.body.password);
   Users.findOneAndUpdate(
     { username: req.params.username },
     {
       $set: {
-        password: hashedPassword,
+        username: req.body.username,
+        password: req.body.password,
         email: req.body.email,
         birthday: req.body.birthday,
       },
@@ -296,7 +293,6 @@ app.post('/users/:username/movies/:objectId',  passport.authenticate('jwt', {ses
     });
 });
 
-
 // Delete a movie from a user's list of favorites
 app.delete('/users/:username/movies/:objectId',  passport.authenticate('jwt', {session: false}), (req, res) => {
   Users.findOneAndUpdate(
@@ -328,7 +324,6 @@ app.delete('/users/:username', passport.authenticate('jwt', {session: false}), (
       res.status(500).send('Error: ' + err);
     });
 });
-
 
   // Error handling middleware
 app.use((err, req, res, next) => {
