@@ -50,7 +50,7 @@ require('./passport');
 app.get('/', (req, res) => {
     res.send('The whole of life is just like watching a film. Only it is as though you always get in ten minutes after the big picture has started, and no-one will tell you the plot, so you have to work it out all yourself from the clues. - Terry Pratchett');
   });
-
+  
   // Get all users -> add in documentation!
 app.get('/users', (req, res) => {
   Users.find()
@@ -76,16 +76,16 @@ app.get('/users/:username', (req, res) => {
 });
 
 // Get all movies
-app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
+app.get('/movies', (req, res) => {
   Movies.find()
   .then((movies) => {
   res.status(200).json(movies);
-  })
-  .catch((err) => {
-  console.error(err);
-  res.status(500).send('Error: ' + err);
-  });
-  });
+})
+.catch((err) => {
+console.error(err);
+res.status(500).send('Error: ' + err);
+});
+});
 
 // Get a movie by title
 app.get('/movies/:Title',  passport.authenticate('jwt', {session: false}), (req, res) => {
@@ -99,7 +99,7 @@ app.get('/movies/:Title',  passport.authenticate('jwt', {session: false}), (req,
   });
   });
 
-// Get the director of a movie
+  // Get the director of a movie
 app.get('/movies/director/:Title',  passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.findOne({ title: req.params.Title })
   .then((movie) => {
@@ -110,7 +110,6 @@ app.get('/movies/director/:Title',  passport.authenticate('jwt', {session: false
   res.status(500).send('Error: ' + err);
   });
   });
-
  // Get the genre of a movie
 app.get('/movies/genre/:Title',  passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.findOne({ title: req.params.Title })
@@ -122,7 +121,6 @@ app.get('/movies/genre/:Title',  passport.authenticate('jwt', {session: false}),
   res.status(500).send('Error: ' + err);
   });
   });
-
   // Get the description of a movie
 app.get('/movies/description/:Title',  passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.findOne({ title: req.params.Title })
@@ -135,7 +133,7 @@ app.get('/movies/description/:Title',  passport.authenticate('jwt', {session: fa
   });
   });
 
- // Get the image URL of a movie
+   // Get the image URL of a movie
 app.get('/movies/image/:Title',  passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.findOne({ title: req.params.Title })
   .then((movie) => {
@@ -146,7 +144,6 @@ app.get('/movies/image/:Title',  passport.authenticate('jwt', {session: false}),
   res.status(500).send('Error: ' + err);
   });
   });
-
  // Get movies by genre
  app.get('/movies/genres/:GenreName',  passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.find({ "genre.name": req.params.GenreName })
@@ -158,7 +155,6 @@ app.get('/movies/image/:Title',  passport.authenticate('jwt', {session: false}),
   res.status(500).send('Error: ' + err);
   });
   });
-
 // Get movies by director
 app.get('/movies/directors/:DirectorName',  passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.find({ 'director.name': req.params.DirectorName })
@@ -170,7 +166,6 @@ app.get('/movies/directors/:DirectorName',  passport.authenticate('jwt', {sessio
   res.status(500).send('Error: ' + err);
   });
   });
-
 //Add a user
 /* We’ll expect JSON in this format
 {
@@ -192,14 +187,11 @@ app.post('/users',
   check('password', 'Password is required').not().isEmpty(),
   check('email', 'Email does not appear to be valid').isEmail()
 ], (req, res) => {
-
   // check the validation object for errors
   let errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-
   let hashedPassword = Users.hashPassword(req.body.password);
   Users.findOne({ username: req.body.username })
     .then((user) => {
@@ -225,7 +217,6 @@ app.post('/users',
       res.status(500).send('Error: ' + error);
     });
 });
-
 // Update a user's info, by username
 /* We’ll expect JSON in this format
 {
@@ -237,6 +228,7 @@ app.post('/users',
   (required)
   birthday: Date
 }*/
+
 app.put('/users/:username', passport.authenticate('jwt', {session: false}),
 [
   check('username', 'Username is required').isLength({min: 5}),
@@ -247,17 +239,17 @@ app.put('/users/:username', passport.authenticate('jwt', {session: false}),
 (req, res) => {
   // check the validation object for errors
   let errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
 
+  let hashedPassword = Users.hashPassword(req.body.password);
   Users.findOneAndUpdate(
     { username: req.params.username },
     {
       $set: {
         username: req.body.username,
-        password: req.hashPassword,
+        password: hashedPassword,
         email: req.body.email,
         birthday: req.body.birthday,
       },
@@ -324,13 +316,12 @@ app.delete('/users/:username', passport.authenticate('jwt', {session: false}), (
       res.status(500).send('Error: ' + err);
     });
 });
-
-  // Error handling middleware
+ 
+// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);  // Log error stack to terminal
     res.status(500).send('Something went wrong!');  // Send error message to client
 });
-
 // listen for requests
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
