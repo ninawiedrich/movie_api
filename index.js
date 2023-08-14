@@ -243,9 +243,7 @@ app.post('/users',
 }*/
 app.put('/users/:username', passport.authenticate('jwt', {session: false}),
 [
-  check('username', 'Username is required').isLength({min: 5}),
-  check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-  check('password', 'Password is required').not().isEmpty(),
+  check('password', 'Min 6 characters are required').isLength({min: 6}),
   check('email', 'Email does not appear to be valid').isEmail()
 ], 
 (req, res) => {
@@ -256,12 +254,12 @@ app.put('/users/:username', passport.authenticate('jwt', {session: false}),
     return res.status(422).json({ errors: errors.array() });
   }
 
+  let hashedPassword = Users.hashPassword(req.body.password);
   Users.findOneAndUpdate(
     { username: req.params.username },
     {
       $set: {
-        username: req.body.username,
-        password: req.body.password,
+        password: hashedPassword,
         email: req.body.email,
         birthday: req.body.birthday,
       },
