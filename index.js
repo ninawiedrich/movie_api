@@ -229,43 +229,27 @@ app.post('/users',
   birthday: Date
 }*/
 
-app.put('/users/:username', passport.authenticate('jwt', {session: false}),
-[
-  check('username', 'Username is required').isLength({min: 5}),
-  check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-  check('password', 'Password is required').not().isEmpty(),
-  check('email', 'Email does not appear to be valid').isEmail()
-], 
-(req, res) => {
-  // check the validation object for errors
-  let errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
-
+app.put("/users/:username", passport.authenticate("jwt", {session: false}), (req, res) => {
   let hashedPassword = Users.hashPassword(req.body.password);
-  Users.findOneAndUpdate(
-    { username: req.params.username },
-    {
+  Users.findOneAndUpdate({
+      "username": req.params.username
+  }, {
       $set: {
-        username: req.body.username,
-        password: hashedPassword,
-        email: req.body.email,
-        birthday: req.body.birthday,
-      },
-    },
-    { new: true }
-  )
-  .then((user) => {
-    if (!user) {
-      return res.status(404).send('Error: No user was found');
-    } else {
-      res.json(user);
-    }
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).send('Error: ' + err);
+          "username": req.body.username,
+          "password": hashedPassword,
+          "email": req.body.email,
+          "birthday": req.body.birthday
+      }
+  }, {
+      new: true
+  }, (error, updatedUser) => {
+      if (error) {
+          res.status(500).send("Error: " + error);
+      } else {
+          console.log(req.body.username);
+          console.log(updatedUser);
+          res.json(updatedUser);
+      }
   });
 });
 
