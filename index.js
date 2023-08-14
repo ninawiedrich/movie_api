@@ -241,6 +241,7 @@ app.post('/users',
   (required)
   birthday: Date
 }*/
+
 app.put('/users/:username', passport.authenticate('jwt', {session: false}),
 [
   check('password', 'Min 6 characters are required').isLength({min: 6}),
