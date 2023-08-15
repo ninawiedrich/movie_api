@@ -230,15 +230,22 @@ app.post('/users',
 }*/
 
 app.put("/users/:username", passport.authenticate("jwt", {session: false}), (req, res) => {
-  let hashedPassword = Users.hashPassword(req.body.password);
+
+  let updateData = {};
+  if(req.body.password){
+    updateData["password"] = Users.hashPassword(req.body.password);
+  }
+  if(req.body.email){
+    updateData["email"] = req.body.email;
+  }
+  if(req.body.birthday){
+    updateData["birthday"] = req.body.birthday;
+  }
+
   Users.findOneAndUpdate({
       "username": req.params.username
   }, {
-      $set: {
-          "password": hashedPassword,
-          "email": req.body.email,
-          "birthday": req.body.birthday
-      }
+      $set: updateData
   }, {
       new: true
   }, (error, updatedUser) => {
@@ -303,7 +310,7 @@ app.delete('/users/:username', passport.authenticate('jwt', {session: false}), (
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);  // Log error stack to terminal
-    res.status(500).send('Something went wrong!');  // Send error message to client
+    res.status(500).send('Error: ' + err.stack);  // Send error message to client
 });
 // listen for requests
 const port = process.env.PORT || 8080;
