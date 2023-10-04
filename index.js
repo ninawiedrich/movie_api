@@ -30,7 +30,12 @@ const cors = require("cors");
 // To allow acces just from specific origins, use the following code (instead of app.use(cors())):
 // CORS middleware
 
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:1234', 'https://moviemavenhub.netlify.app', 'https://moviemaven-dfc40ecb1c33.herokuapp.com', 'https://ninawiedrich.github.io/movieMaven-Angular-client/'
+let allowedOrigins = ['http://localhost:8080', 
+'http://testsite.com', 
+'http://localhost:1234', 
+'https://moviemavenhub.netlify.app', 
+'https://moviemaven-dfc40ecb1c33.herokuapp.com', 
+'https://ninawiedrich.github.io'
 ];
 app.use(cors({
   origin: (origin, callback) => {
