@@ -49,7 +49,7 @@ let auth = require("./auth")(app);
 const passport = require("passport");
 require("./passport");
 
-//READ DATA
+// TO READ DATA
 app.get("/", (req, res) => {
   res.send(
     "The whole of life is just like watching a film. Only it is as though you always get in ten minutes after the big picture has started, and no-one will tell you the plot, so you have to work it out all yourself from the clues. - Terry Pratchett"
